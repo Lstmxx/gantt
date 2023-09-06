@@ -1,37 +1,98 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed, watch } from 'vue';
 import type { Props } from './type';
-import { initCanvas, initRightWrapperBg } from './utils';
-import useAttr from './hooks/use-attr';
+import { initCanvas, initRightWrapperBg, generateTimeList, mergeOption } from './utils';
+import { BORDER_WIDTH } from './constant';
 
 let ctx: CanvasRenderingContext2D | null;
 const canvasRef = ref<HTMLCanvasElement>();
-const props = withDefaults(defineProps<Props>(), {
-  option: () => ({
-    height: 1200,
-    width: 1600,
-    blockHeight: 32,
-    blockWidth: 60,
-  }),
+const bgCtx = ref<CanvasRenderingContext2D | null>(null);
+const bgRef = ref<HTMLCanvasElement>();
+
+const props = defineProps<Props>();
+const ganttOption = computed(() => mergeOption(props.option || {}));
+const rowDataList = computed(() => props.dataList || []);
+const timeList = computed(() => {
+  return generateTimeList(ganttOption.value.timeOption);
 });
-const { rightWrapperStyle } = useAttr(props);
-console.log(rightWrapperStyle);
+const contentHeight = computed(() => {
+  const { blockHeight, height } = ganttOption.value;
+  return Math.max(height, rowDataList.value.length * (blockHeight + BORDER_WIDTH));
+});
+const contentWidth = computed(() => {
+  const { width, blockWidth } = ganttOption.value;
+  console.log('width', width);
+  console.log('computed', Math.max(width, timeList.value.length * (blockWidth + BORDER_WIDTH)));
+  return Math.max(width, timeList.value.length * (blockWidth + BORDER_WIDTH));
+});
+
+// const test = () => {
+//   const maxX = Math.ceil(ganttOption.value.width / ganttOption.value.blockWidth);
+//   const maxY = Math.ceil(ganttOption.value.height / ganttOption.value.blockHeight);
+//   for (let i = 0; i < 200; i++) {
+//     const pos = { x: Math.floor(Math.random() * maxX), y: Math.floor(Math.random() * maxY) };
+//     drawReact(
+//       ctx,
+//       {
+//         x: (ganttOption.value.blockWidth + BORDER_WIDTH) * pos.x,
+//         y: (ganttOption.value.blockHeight + BORDER_WIDTH) * pos.y,
+//       },
+//       ganttOption.value.blockWidth,
+//       ganttOption.value.blockHeight,
+//     );
+//   }
+//   // setTimeout(() => {
+//   //   if (ctx) {
+//   //     ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+//   //     test();
+//   //   }
+//   // }, 3000);
+// };
+
+// init Height
+watch(
+  () => [
+    rowDataList,
+    ganttOption.value.blockHeight,
+    ganttOption.value.blockWidth,
+    contentHeight,
+    contentWidth,
+    bgCtx,
+  ],
+  () => {
+    console.log('in watch', contentWidth.value);
+    initRightWrapperBg(bgCtx.value, ganttOption.value, contentWidth.value, contentHeight.value);
+  },
+  {
+    deep: true,
+  },
+);
 
 onMounted(() => {
+  console.log('go');
+  if (bgRef.value) {
+    bgCtx.value = initCanvas(bgRef.value);
+  }
   if (canvasRef.value) {
     ctx = initCanvas(canvasRef.value);
-    initRightWrapperBg(ctx, props.option);
-    console.log(canvasRef);
     console.log(ctx);
   }
 });
 </script>
 
 <template>
-  <canvas
-    ref="canvasRef"
-    :height="props.option.height"
-    :width="props.option.width"
-    class="bg-white"
-  ></canvas>
+  <div class="relative">
+    <canvas
+      ref="bgRef"
+      class="absolute left-0 top-0 bg-white z-10"
+      :height="ganttOption.height"
+      :width="ganttOption.width"
+    ></canvas>
+    <canvas
+      ref="canvasRef"
+      class="relative z-50"
+      :height="ganttOption.height"
+      :width="ganttOption.width"
+    ></canvas>
+  </div>
 </template>

@@ -11,11 +11,14 @@
     "prepare": "husky install"
   },
   "dependencies": {
+    "dayjs": "^1.11.9",
+    "lodash-es": "^4.17.21",
     "vue": "^3.3.4"
   },
   "devDependencies": {
     "@commitlint/cli": "^17.7.1",
     "@commitlint/config-conventional": "^17.7.0",
+    "@types/lodash-es": "^4.17.9",
     "@types/node": "^20.5.9",
     "@typescript-eslint/eslint-plugin": "^6.4.0",
     "@vitejs/plugin-vue": "^4.2.3",

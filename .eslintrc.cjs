@@ -1,6 +1,6 @@
 module.exports = {
   extends: [
-    'eslint:recommended',
+    // 'eslint:recommended',
     'plugin:vue/vue3-recommended',
     'plugin:@typescript-eslint/recommended',
     'plugin:prettier/recommended',
@@ -17,11 +17,6 @@ module.exports = {
   },
   rules: {
     "vue/multi-word-component-names": 'off',
-    "prettier/prettier": [
-      "error",
-      {
-        "endOfLine": "auto"
-      }
-    ]
+    "prettier/prettier": ["error", { "endOfLine": "auto" }]
   },
 };
