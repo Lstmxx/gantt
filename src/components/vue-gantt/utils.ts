@@ -1,6 +1,6 @@
 import { merge } from 'lodash-es';
 import dayjs from 'dayjs';
-import { BORDER_COLOR, BORDER_WIDTH, DATE_MODE } from './constant';
+import { BORDER_COLOR, BORDER_WIDTH } from './constant';
 import { GanttCustomOption, GanttOption, Position, TimeItem } from './type';
 
 export const isCtxNotNull = (ctx: CanvasRenderingContext2D | null) => !!ctx;
@@ -48,9 +48,9 @@ export const initRightWrapperBg = (
       ctx!.strokeStyle = BORDER_COLOR;
       cb(ctx!, point);
       ctx!.stroke();
+      ctx!.closePath();
     }
   };
-  console.log('contentWidth', contentWidth);
   draw(contentHeight, blockHeight + BORDER_WIDTH, (ctx, point) => {
     ctx.moveTo(0, point);
     ctx.lineTo(contentWidth, point);
@@ -102,7 +102,7 @@ export const mergeOption = (ganttCustomOption: GanttCustomOption) => {
     timeOption: {
       startTime,
       endTime,
-      type: DATE_MODE.DAY,
+      type: 'day',
     },
   };
 

@@ -3,6 +3,8 @@ import { ref, onMounted, computed, watch } from 'vue';
 import type { Props } from './type';
 import { initCanvas, initRightWrapperBg, generateTimeList, mergeOption } from './utils';
 import { BORDER_WIDTH } from './constant';
+import ScrollerBar from './components/scroller-bar/index.vue';
+import { useScroll } from './hooks/use-scroll';
 
 let ctx: CanvasRenderingContext2D | null;
 const canvasRef = ref<HTMLCanvasElement>();
@@ -11,6 +13,9 @@ const bgRef = ref<HTMLCanvasElement>();
 
 const props = defineProps<Props>();
 const ganttOption = computed(() => mergeOption(props.option || {}));
+
+const { handleScroll, horizontalScrollbar, verticalScrollbar } = useScroll();
+
 const rowDataList = computed(() => props.dataList || []);
 const timeList = computed(() => {
   return generateTimeList(ganttOption.value.timeOption);
@@ -19,10 +24,9 @@ const contentHeight = computed(() => {
   const { blockHeight, height } = ganttOption.value;
   return Math.max(height, rowDataList.value.length * (blockHeight + BORDER_WIDTH));
 });
+
 const contentWidth = computed(() => {
   const { width, blockWidth } = ganttOption.value;
-  console.log('width', width);
-  console.log('computed', Math.max(width, timeList.value.length * (blockWidth + BORDER_WIDTH)));
   return Math.max(width, timeList.value.length * (blockWidth + BORDER_WIDTH));
 });
 
@@ -60,7 +64,6 @@ watch(
     bgCtx,
   ],
   () => {
-    console.log('in watch', contentWidth.value);
     initRightWrapperBg(bgCtx.value, ganttOption.value, contentWidth.value, contentHeight.value);
   },
   {
@@ -81,18 +84,34 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="relative">
+  <div
+    class="relative overflow-hidden"
+    :style="{ height: `${ganttOption.height}px`, width: `${ganttOption.width}px` }"
+  >
+    <ScrollerBar
+      ref="verticalScrollbar"
+      direction="vertical"
+      :content-length="contentHeight"
+      :canvas-length="ganttOption.height"
+    />
+    <ScrollerBar
+      ref="horizontalScrollbar"
+      direction="horizontal"
+      :content-length="contentWidth"
+      :canvas-length="ganttOption.width"
+    />
     <canvas
       ref="bgRef"
-      class="absolute left-0 top-0 bg-white z-10"
+      class="absolute left-0 top-0 bg-white z-1"
       :height="ganttOption.height"
       :width="ganttOption.width"
     ></canvas>
     <canvas
       ref="canvasRef"
-      class="relative z-50"
+      class="relative z-49"
       :height="ganttOption.height"
       :width="ganttOption.width"
+      @wheel.stop="handleScroll"
     ></canvas>
   </div>
 </template>

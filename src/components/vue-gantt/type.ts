@@ -1,4 +1,3 @@
-import { DATE_MODE } from './constant';
 import { Dayjs } from 'dayjs';
 
 export type GanttCustomOption = {
@@ -9,7 +8,7 @@ export type GanttCustomOption = {
   timeOption?: {
     startTime: Date;
     endTime: Date;
-    type: DATE_MODE;
+    type: 'day' | 'month' | 'year';
   };
 };
 
@@ -17,7 +16,7 @@ export type GanttOption = Required<Omit<GanttCustomOption, 'timeOption'>> & {
   timeOption: {
     startTime: Dayjs;
     endTime: Dayjs;
-    type: DATE_MODE;
+    type: 'day' | 'month' | 'year';
   };
 };
 
@@ -31,7 +30,7 @@ export type Task = {
 
 export type RowData = {
   name: string;
-  tasks: Task;
+  tasks: Task[];
   [key: string]: unknown;
 };
 
