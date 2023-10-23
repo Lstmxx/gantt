@@ -1,34 +1,68 @@
 <script lang="ts" setup>
 import { ref, onMounted, computed, watch } from 'vue';
 import type { Props } from './type';
-import { initCanvas, initRightWrapperBg, generateTimeList, mergeOption } from './utils';
+import { generateTimeList, mergeOption } from './utils/utils';
 import { BORDER_WIDTH } from './constant';
 import ScrollerBar from './components/scroller-bar/index.vue';
 import { useScroll } from './hooks/use-scroll';
+import { Draw } from './utils/draw';
+import { renderContentGrid } from './utils/grid';
 
-let ctx: CanvasRenderingContext2D | null;
+let draw: Draw;
 const canvasRef = ref<HTMLCanvasElement>();
-const bgCtx = ref<CanvasRenderingContext2D | null>(null);
-const bgRef = ref<HTMLCanvasElement>();
 
 const props = defineProps<Props>();
 const ganttOption = computed(() => mergeOption(props.option || {}));
 
-const { handleScroll, horizontalScrollbar, verticalScrollbar } = useScroll();
+const originPoint = ref({ x: 0, y: 0 });
 
-const rowDataList = computed(() => props.dataList || []);
-const timeList = computed(() => {
-  return generateTimeList(ganttOption.value.timeOption);
+const { handleScroll, horizontalScrollbar, verticalScrollbar } = useScroll({
+  callback(x, y) {
+    originPoint.value = {
+      x,
+      y,
+    };
+    console.log(originPoint.value);
+  },
 });
+
+/**
+ * data相关
+ */
+const rowDataList = computed(() => props.dataList || []);
 const contentHeight = computed(() => {
   const { blockHeight, height } = ganttOption.value;
   return Math.max(height, rowDataList.value.length * (blockHeight + BORDER_WIDTH));
 });
-
 const contentWidth = computed(() => {
   const { width, blockWidth } = ganttOption.value;
   return Math.max(width, timeList.value.length * (blockWidth + BORDER_WIDTH));
 });
+
+const timeList = computed(() => {
+  return generateTimeList(ganttOption.value.timeOption);
+});
+
+watch(
+  () => [
+    ganttOption.value.height,
+    ganttOption.value.width,
+    ganttOption.value.blockHeight,
+    ganttOption.value.blockWidth,
+  ],
+  () => {
+    const { height, width } = ganttOption.value;
+    draw.resize(height, width);
+    renderContentGrid(draw, originPoint.value.x, originPoint.value.y, ganttOption.value);
+  },
+);
+
+watch(
+  () => [originPoint.value],
+  () => {
+    renderContentGrid(draw, originPoint.value.x, originPoint.value.y, ganttOption.value);
+  },
+);
 
 // const test = () => {
 //   const maxX = Math.ceil(ganttOption.value.width / ganttOption.value.blockWidth);
@@ -53,33 +87,14 @@ const contentWidth = computed(() => {
 //   // }, 3000);
 // };
 
-// init Height
-watch(
-  () => [
-    rowDataList,
-    ganttOption.value.blockHeight,
-    ganttOption.value.blockWidth,
-    contentHeight,
-    contentWidth,
-    bgCtx,
-  ],
-  () => {
-    initRightWrapperBg(bgCtx.value, ganttOption.value, contentWidth.value, contentHeight.value);
-  },
-  {
-    deep: true,
-  },
-);
+const init = () => {
+  if (canvasRef.value) {
+    draw = new Draw(canvasRef.value, ganttOption.value.width, ganttOption.value.height);
+  }
+};
 
 onMounted(() => {
-  console.log('go');
-  if (bgRef.value) {
-    bgCtx.value = initCanvas(bgRef.value);
-  }
-  if (canvasRef.value) {
-    ctx = initCanvas(canvasRef.value);
-    console.log(ctx);
-  }
+  init();
 });
 </script>
 
@@ -100,18 +115,6 @@ onMounted(() => {
       :content-length="contentWidth"
       :canvas-length="ganttOption.width"
     />
-    <canvas
-      ref="bgRef"
-      class="absolute left-0 top-0 bg-white z-1"
-      :height="ganttOption.height"
-      :width="ganttOption.width"
-    ></canvas>
-    <canvas
-      ref="canvasRef"
-      class="relative z-49"
-      :height="ganttOption.height"
-      :width="ganttOption.width"
-      @wheel.stop="handleScroll"
-    ></canvas>
+    <canvas ref="canvasRef" @wheel.stop="handleScroll"></canvas>
   </div>
 </template>

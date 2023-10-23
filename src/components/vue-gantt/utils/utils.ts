@@ -1,7 +1,11 @@
 import { merge } from 'lodash-es';
 import dayjs from 'dayjs';
-import { BORDER_COLOR, BORDER_WIDTH } from './constant';
-import { GanttCustomOption, GanttOption, Position, TimeItem } from './type';
+import { BORDER_COLOR, BORDER_WIDTH } from '../constant';
+import { GanttCustomOption, GanttOption, Position, TimeItem } from '../type';
+
+export function dpr() {
+  return window.devicePixelRatio || 1;
+}
 
 export const isCtxNotNull = (ctx: CanvasRenderingContext2D | null) => !!ctx;
 

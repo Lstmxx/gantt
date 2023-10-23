@@ -37,16 +37,18 @@ const countMoveDistance = (oldDistance: number, val: number) => {
 };
 
 const moveBar = (val: number) => {
+  let res = 0;
   if (barRef.value) {
     const { offsetTop, offsetLeft } = barRef.value;
     if (props.direction === 'vertical') {
-      barRef.value.style.top = `${countMoveDistance(offsetTop, val)}px`;
-      console.log(offsetTop);
-      console.log(countMoveDistance(offsetTop, val));
+      res = countMoveDistance(offsetTop, val);
+      barRef.value.style.top = `${res}px`;
     } else {
-      barRef.value.style.left = `${countMoveDistance(offsetLeft, val)}px`;
+      res = countMoveDistance(offsetLeft, val);
+      barRef.value.style.left = `${res}px`;
     }
   }
+  return res;
 };
 
 defineExpose({
