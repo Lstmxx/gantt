@@ -3,17 +3,19 @@ import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import type { Props } from './type';
 import { generateTimeList, mergeOption } from './utils/utils';
 import { BORDER_WIDTH } from './constant';
-import ScrollerBar from './components/scroller-bar/index.vue';
 import { useScroll } from './hooks/use-scroll';
 import { Draw } from './utils/draw';
-import { renderContentGrid } from './utils/grid';
+import { render } from './utils/render';
+
+import ScrollerBar from './components/scroller-bar/index.vue';
+import DividingLine from './components/dividing-line/index.vue';
 
 let draw: Draw;
 const canvasRef = ref<HTMLCanvasElement>();
 
 const props = defineProps<Props>();
 const ganttOption = computed(() => mergeOption(props.option || {}));
-
+const dividingLineXPos = ref(0);
 const originPoint = ref({ x: 0, y: 0 });
 
 const { handleScroll, horizontalScrollbar, verticalScrollbar } = useScroll({
@@ -30,10 +32,16 @@ const { handleScroll, horizontalScrollbar, verticalScrollbar } = useScroll({
  * data相关
  */
 const rowDataList = computed(() => props.dataList || []);
+/**
+ * 预估内容总内容高度
+ */
 const contentHeight = computed(() => {
   const { blockHeight, height } = ganttOption.value;
   return Math.max(height, rowDataList.value.length * (blockHeight + BORDER_WIDTH));
 });
+/**
+ * 预估内容总宽度高度
+ */
 const contentWidth = computed(() => {
   const { width, blockWidth } = ganttOption.value;
   return Math.max(width, timeList.value.length * (blockWidth + BORDER_WIDTH));
@@ -43,19 +51,30 @@ const timeList = computed(() => {
   return generateTimeList(ganttOption.value.timeOption);
 });
 
+const canvasVW = computed(() => ganttOption.value.width - dividingLineXPos.value);
+const canvasVH = computed(() => ganttOption.value.height);
 watch(
   () => [
-    ganttOption.value.height,
-    ganttOption.value.width,
+    canvasVH.value,
+    canvasVW.value,
     ganttOption.value.blockHeight,
     ganttOption.value.blockWidth,
   ],
   () => {
-    if (draw) {
-      const { height, width } = ganttOption.value;
-      draw.resize(height, width);
-      renderContentGrid(draw, originPoint.value.x, originPoint.value.y, ganttOption.value);
-    }
+    nextTick(() => {
+      if (draw) {
+        const { height, width } = ganttOption.value;
+        draw.resize(height, width);
+        render(
+          draw,
+          originPoint.value.x,
+          originPoint.value.y,
+          ganttOption.value,
+          canvasVW.value,
+          canvasVH.value,
+        );
+      }
+    });
   },
   {
     immediate: true,
@@ -65,7 +84,14 @@ watch(
 watch(
   () => [originPoint.value],
   () => {
-    renderContentGrid(draw, originPoint.value.x, originPoint.value.y, ganttOption.value);
+    render(
+      draw,
+      originPoint.value.x,
+      originPoint.value.y,
+      ganttOption.value,
+      canvasVW.value,
+      canvasVH.value,
+    );
   },
 );
 
@@ -94,10 +120,8 @@ watch(
 
 const init = () => {
   if (canvasRef.value) {
-    draw = new Draw(canvasRef.value, ganttOption.value.width, ganttOption.value.height);
-    nextTick(() =>
-      renderContentGrid(draw, originPoint.value.x, originPoint.value.y, ganttOption.value),
-    );
+    draw = new Draw(canvasRef.value, canvasVW.value, canvasVH.value);
+    // nextTick(() => render(draw, originPoint.value.x, originPoint.value.y, ganttOption.value));
   }
 };
 
@@ -108,21 +132,28 @@ onMounted(() => {
 
 <template>
   <div
-    class="relative overflow-hidden"
+    class="flex relative overflow-hidden bg-white"
     :style="{ height: `${ganttOption.height}px`, width: `${ganttOption.width}px` }"
   >
-    <ScrollerBar
-      ref="verticalScrollbar"
-      direction="vertical"
-      :content-length="contentHeight"
-      :canvas-length="ganttOption.height"
-    />
-    <ScrollerBar
-      ref="horizontalScrollbar"
-      direction="horizontal"
-      :content-length="contentWidth"
-      :canvas-length="ganttOption.width"
-    />
-    <canvas ref="canvasRef" @wheel.stop="handleScroll"></canvas>
+    <div class="flex-1"></div>
+    <DividingLine v-model="dividingLineXPos" :total-width="ganttOption.width" />
+    <div class="flex flex-col relative" :style="{ width: `${canvasVW}px` }">
+      <div class="time-line"></div>
+      <div class="relative">
+        <ScrollerBar
+          ref="verticalScrollbar"
+          direction="vertical"
+          :content-length="contentHeight"
+          :canvas-length="canvasVH"
+        />
+        <ScrollerBar
+          ref="horizontalScrollbar"
+          direction="horizontal"
+          :content-length="contentWidth"
+          :canvas-length="canvasVW"
+        />
+        <canvas ref="canvasRef" @wheel.stop="handleScroll"></canvas>
+      </div>
+    </div>
   </div>
 </template>

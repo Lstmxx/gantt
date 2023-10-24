@@ -20,7 +20,7 @@ export type GanttOption = Required<Omit<GanttCustomOption, 'timeOption'>> & {
   };
 };
 
-export type Task = {
+export type Children = {
   startTime: Date;
   endTIme: Date;
   color?: string;
@@ -30,7 +30,7 @@ export type Task = {
 
 export type RowData = {
   name: string;
-  tasks: Task[];
+  children: Children[];
   [key: string]: unknown;
 };
 
