@@ -65,21 +65,6 @@ export const initRightWrapperBg = (
   });
 };
 
-export const initCanvas = (canvasRef: HTMLCanvasElement) => {
-  const ctx = canvasRef.getContext('2d');
-
-  // const dpr = window.devicePixelRatio;
-  // const { width: cssWidth, height: cssHeight } = canvasRef.getBoundingClientRect();
-  // canvasRef.width = dpr * cssWidth;
-  // canvasRef.height = dpr * cssHeight;
-
-  if (isCtxNotNull(ctx)) {
-    // ctx!.scale(dpr, dpr);
-  }
-
-  return ctx;
-};
-
 export const generateTimeList = (timeOption: GanttOption['timeOption']): TimeItem[] => {
   // 获取时间选项
   const { endTime, startTime, type } = timeOption;

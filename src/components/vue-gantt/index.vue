@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, onMounted, computed, watch } from 'vue';
+import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import type { Props } from './type';
 import { generateTimeList, mergeOption } from './utils/utils';
 import { BORDER_WIDTH } from './constant';
@@ -51,9 +51,14 @@ watch(
     ganttOption.value.blockWidth,
   ],
   () => {
-    const { height, width } = ganttOption.value;
-    draw.resize(height, width);
-    renderContentGrid(draw, originPoint.value.x, originPoint.value.y, ganttOption.value);
+    if (draw) {
+      const { height, width } = ganttOption.value;
+      draw.resize(height, width);
+      renderContentGrid(draw, originPoint.value.x, originPoint.value.y, ganttOption.value);
+    }
+  },
+  {
+    immediate: true,
   },
 );
 
@@ -90,6 +95,9 @@ watch(
 const init = () => {
   if (canvasRef.value) {
     draw = new Draw(canvasRef.value, ganttOption.value.width, ganttOption.value.height);
+    nextTick(() =>
+      renderContentGrid(draw, originPoint.value.x, originPoint.value.y, ganttOption.value),
+    );
   }
 };
 

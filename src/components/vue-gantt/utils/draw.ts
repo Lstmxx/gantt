@@ -57,7 +57,7 @@ export class Draw {
   }
 
   fillRect(x: number, y: number, w: number, h: number) {
-    this.ctx.fillRect(npx(x) - 0.5, npx(y) - 0.5, npx(w), npx(h));
+    this.ctx.fillRect(npx(x), npx(y), npx(w), npx(h));
     return this;
   }
 

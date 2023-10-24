@@ -12,16 +12,21 @@ export const renderContentGrid = (draw: Draw, tx: number, ty: number, option: Ga
   const { blockHeight, blockWidth, height, width } = option;
   draw.clearRect(0, 0, width, height);
   draw.save();
-  draw.attr(tableGridStyle).translate(-tx, -ty);
-  const rows = Math.ceil((height + ty) / blockHeight);
+  const x = tx % blockWidth;
+  const y = ty % blockHeight;
+  draw.attr(tableGridStyle).translate(-x, -y);
+  draw.fillRect(x, y, width, height);
+  const rows = Math.ceil((height + y) / blockHeight);
+  console.log(rows);
   for (let index = 0; index < rows; index++) {
     const y = index * blockHeight;
-    draw.line([0, y], [width + tx, y]);
+    draw.line([0, y], [width + x, y]);
   }
-  const cols = Math.ceil((width + tx) / blockWidth);
+  const cols = Math.ceil((width + x) / blockWidth);
+  console.log(cols);
   for (let index = 0; index < cols; index++) {
     const x = index * blockWidth;
-    draw.line([x, 0], [x, height + ty]);
+    draw.line([x, 0], [x, height + y]);
   }
   console.log('draw');
   draw.restore();
