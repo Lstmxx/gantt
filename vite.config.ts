@@ -8,7 +8,7 @@ export default defineConfig({
   build: {
     target: 'esnext',
     lib: {
-      entry: path.resolve(__dirname, 'src/vue-gantt.ts'),
+      entry: path.resolve(__dirname, 'src/vue-gantt.vue'),
       formats: ['cjs', 'es'],
       name: 'lib',
     },

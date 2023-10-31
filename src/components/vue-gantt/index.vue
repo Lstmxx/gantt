@@ -2,13 +2,15 @@
 import { ref, onMounted, computed, watch, nextTick } from 'vue';
 import type { Props } from './type';
 import { generateTimeList, mergeOption } from './utils/utils';
-import { BORDER_WIDTH } from './constant';
+import { BORDER_WIDTH, HEADER_HEIGHT } from './constant';
 import { useScroll } from './hooks/use-scroll';
 import { Draw } from './utils/draw';
 import { render } from './utils/render';
 
 import ScrollerBar from './components/scroller-bar/index.vue';
 import DividingLine from './components/dividing-line/index.vue';
+import TimeLine from './components/time-line/index.vue';
+import Aside from './components/aside/index.vue';
 
 let draw: Draw;
 const canvasRef = ref<HTMLCanvasElement>();
@@ -52,7 +54,7 @@ const timeList = computed(() => {
 });
 
 const canvasVW = computed(() => ganttOption.value.width - dividingLineXPos.value);
-const canvasVH = computed(() => ganttOption.value.height);
+const canvasVH = computed(() => ganttOption.value.height - HEADER_HEIGHT - BORDER_WIDTH);
 watch(
   () => [
     canvasVH.value,
@@ -132,13 +134,13 @@ onMounted(() => {
 
 <template>
   <div
-    class="flex relative overflow-hidden bg-white"
+    :class="`flex relative overflow-hidden bg-white border-2 border-[#ecedf1]`"
     :style="{ height: `${ganttOption.height}px`, width: `${ganttOption.width}px` }"
   >
-    <div class="flex-1"></div>
+    <Aside :gantt-option="ganttOption" />
     <DividingLine v-model="dividingLineXPos" :total-width="ganttOption.width" />
     <div class="flex flex-col relative" :style="{ width: `${canvasVW}px` }">
-      <div class="time-line"></div>
+      <TimeLine />
       <div class="relative">
         <ScrollerBar
           ref="verticalScrollbar"

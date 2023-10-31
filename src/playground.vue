@@ -12,141 +12,141 @@ const option = {
 const dataList = ref<RowData[]>([
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
   {
     name: '',
-    tasks: [],
+    children: [],
   },
 ]);
 </script>
 
 <template>
-  <div class="h-screen w-screen bg-slate-600">
+  <div class="flex h-screen w-screen bg-slate-600 justify-center items-center">
     <Gantt :option="option" :data-list="dataList" />
   </div>
 </template>

@@ -1,4 +1,4 @@
-export const BORDER_WIDTH = 1;
+export const BORDER_WIDTH = 2;
 export const BORDER_COLOR = '#ecedf1';
 
 export enum DATE_MODE {
@@ -6,3 +6,5 @@ export enum DATE_MODE {
   MONTH = 'month',
   YEAR = 'year',
 }
+
+export const HEADER_HEIGHT = 60;

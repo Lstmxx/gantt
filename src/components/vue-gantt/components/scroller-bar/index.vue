@@ -58,7 +58,7 @@ defineExpose({
 
 <template>
   <div :class="`z-50 scroller-bar-wrapper ${props.direction}`" :style="scrollerWrapperStyle">
-    <div ref="barRef" class="bar" :style="barStyle"></div>
+    <div ref="barRef" class="bar bg-gray-400" :style="barStyle"></div>
   </div>
 </template>
 
@@ -68,7 +68,6 @@ defineExpose({
   background: #ecedf1;
   .bar {
     border-radius: 8px;
-    background-color: red;
   }
   &.vertical {
     right: 0px;

@@ -30,6 +30,7 @@ export const mergeOption = (ganttCustomOption: GanttCustomOption) => {
       endTime,
       type: 'day',
     },
+    title: '',
   };
 
   const option = merge(defaultOption, ganttCustomOption) as GanttOption;

@@ -52,8 +52,8 @@ const handleMove = (e: MouseEvent) => {
 
 <template>
   <div
-    class="absolute h-full cursor-ew-resize z-50 px-[16px]"
-    :style="{ left: `${modelValue - 16}px` }"
+    class="flex justify-center absolute h-full cursor-ew-resize z-50 w-[32px]"
+    :style="{ left: `${modelValue - 18}px` }"
     @mousedown="handleDown"
     @mouseup="handleUp"
     @mousemove="handleMove"

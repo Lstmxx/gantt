@@ -10,6 +10,7 @@ export type GanttCustomOption = {
     endTime: Date;
     type: 'day' | 'month' | 'year';
   };
+  title?: string;
 };
 
 export type GanttOption = Required<Omit<GanttCustomOption, 'timeOption'>> & {
